@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-jenkins
+  template:
+    metadata:
+      labels:
+        app: web-jenkins
+    spec:
+      containers:
+        - name: web-jenkins
+          image: 621917999036.dkr.ecr.ap-northeast-2.amazonaws.com/web_jenkins:IMAGE_VERSION
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-jenkins-service
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: nseal.link
+spec:
+  type: LoadBalancer
+  selector:
+    app: web-jenkins
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
