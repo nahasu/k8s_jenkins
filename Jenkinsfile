@@ -1,4 +1,14 @@
 pipeline {
+    environment {
+        REGION = 'ap-northeast-2'
+        ECR_PATH = '621917999036.dkr.ecr.ap-northeast-2.amazonaws.com'
+        ECR_IMAGE = 'web_jenkins'
+        EKS_API = 'https://CAA176A030B7CEA3BDA308860FC4A4CF.yl4.ap-northeast-2.eks.amazonaws.com'
+        EKS_CLUSTER_NAME = 'myeks'
+        EKS_JENKINS_CREDENTIAL_ID = 'k8s'
+        AWS_CREDENTIAL_ID = 'AWS'
+    }
+    
     agent {
         kubernetes {
             yaml """
