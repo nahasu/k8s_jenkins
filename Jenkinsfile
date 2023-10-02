@@ -1,4 +1,12 @@
 pipeline {
+
+    agent {
+        kubernetes {
+            label 'default'
+            defaultContainer 'jnlp'
+        }
+    }    
+    
     environment {
         REGION = 'ap-northeast-2'
         ECR_PATH = '621917999036.dkr.ecr.ap-northeast-2.amazonaws.com'
@@ -9,24 +17,6 @@ pipeline {
         AWS_CREDENTIAL_ID = 'AWS'
     }
     
-    agent {
-        kubernetes {
-            yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app: test-app
-spec:
-  containers:
-  - name: test-app-container
-    image: ${ECR_PATH}/${ECR_IMAGE}:v${env.BUILD_NUMBER}
-    ports:
-      - containerPort: 80
-"""
-        }
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
