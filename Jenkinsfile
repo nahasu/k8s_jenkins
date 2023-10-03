@@ -36,7 +36,6 @@ pipeline {
       }
     }
   }
-}  
     
     environment {
         REGION = 'ap-northeast-2'
