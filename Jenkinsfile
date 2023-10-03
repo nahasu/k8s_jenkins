@@ -1,29 +1,42 @@
 pipeline {
 
-    agent {
-        kubernetes {
-            label 'default'
-            defaultContainer 'jnlp'
-            yaml """
-spec:
-  dnsPolicy: Default       
-  containers:
-    - name: docker
-      image: docker:latest
-      command:
-        - cat
-      tty: true
-      privileged: true
-      volumeMounts:
-        - name: dockersock
-          mountPath: /var/run/docker.sock
-  volumes:
-    - name: dockersock
-      hostPath:
-        path: /var/run/docker.sock
-            """
+  agent {
+    kubernetes {
+      yaml '''
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          labels:
+            some-label: some-label-value
+        spec:
+          containers:
+          - name: maven
+            image: maven:alpine
+            command:
+            - cat
+            tty: true
+          - name: busybox
+            image: busybox
+            command:
+            - cat
+            tty: true
+        '''
+      retries 2
+    }
+  }
+  stages {
+    stage('Run maven') {
+      steps {
+        container('maven') {
+          sh 'mvn -version'
         }
-    }    
+        container('busybox') {
+          sh '/bin/busybox'
+        }
+      }
+    }
+  }
+}  
     
     environment {
         REGION = 'ap-northeast-2'
