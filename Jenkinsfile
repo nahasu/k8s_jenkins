@@ -2,13 +2,13 @@ pipeline {
     
   agent {
       kubernetes {
-          label 'jenkins=slave'
+          label 'jenkins'
           yaml '''
               apiVersion: v1
               kind: Pod
               metadata:
                   labels:
-                      some-label: some-label-value
+                      some-label: slave
               spec:
                   containers:
                   - name: docker
