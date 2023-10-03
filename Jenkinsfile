@@ -1,29 +1,32 @@
 pipeline {
     
   agent {
-    kubernetes {
-      yaml '''
-        apiVersion: v1
-        kind: Pod
-        metadata:
-          labels:
-            some-label: some-label-value
-        spec:
-          containers:
-          - name: maven
-            image: maven:alpine
-            command:
-            - cat
-            tty: true
-          - name: busybox
-            image: busybox
-            command:
-            - cat
-            tty: true
-        '''
-      retries 2
-    }
-  }  
+      kubernetes {
+          label 'jenkins=slave'
+          yaml '''
+              apiVersion: v1
+              kind: Pod
+              metadata:
+                  labels:
+                      some-label: some-label-value
+              spec:
+                  containers:
+                  - name: docker
+                    image: docker:latest
+                    command:
+                    - cat
+                    tty: true
+                    privileged: true
+                    volumeMounts:
+                      - name: dockersock
+                        mountPath: /var/run/docker.sock
+                  volumes:
+                  - name: dockersock
+                    hostPath:
+                      path: /var/run/docker.sock
+          '''
+      }
+  }
     
     environment {
         REGION = 'ap-northeast-2'
