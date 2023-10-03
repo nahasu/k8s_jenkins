@@ -4,26 +4,37 @@ pipeline {
       kubernetes {
           label 'jenkins'
           yaml '''
-              apiVersion: v1
-              kind: Pod
-              metadata:
-                  labels:
-                      some-label: slave
-              spec:
-                  containers:
-                  - name: docker
-                    image: docker:latest
-                    command:
-                    - cat
-                    tty: true
-                    privileged: true
-                    volumeMounts:
-                      - name: dockersock
-                        mountPath: /var/run/docker.sock
-                  volumes:
-                  - name: dockersock
-                    hostPath:
-                      path: /var/run/docker.sock
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                some-label: slave
+              name: jenkins
+            spec:
+              containers:
+              - name: jenkins
+                image: jenkins/jenkins
+                ports:
+                - containerPort: 8080
+                - containerPort: 50000
+                volumeMounts:
+                - name: jenkins-home
+                  mountPath: /var/jenkins_home
+              - name: docker
+                image: docker:latest
+                command:
+                - cat
+                tty: true
+                privileged: true
+                volumeMounts:
+                - name: dockersock
+                  mountPath: /var/run/docker.sock
+              volumes:
+              - name: dockersock
+                hostPath:
+                  path: /var/run/docker.sock
+              - name: jenkins-home
+                emptyDir: {}
           '''
       }
   }
